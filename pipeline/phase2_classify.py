@@ -1215,7 +1215,7 @@ def _run_search(db, embedding_model, args_query_audio, args_offset_s,
     query_embedding = embedding_model.embed(audio_window).embeddings[0, 0]
     log.info("Query embedding shape: %s", query_embedding.shape)
 
-    score_fn = score_functions_mod.get_score_fn(args_score_fn, target_score=args_target_score)
+    score_fn = score_functions.get_score_fn(args_score_fn, target_score=args_target_score)
 
     log.info(
         "Searching DB (exact=%s, num_results=%d, score_fn=%s)...",
@@ -1223,9 +1223,10 @@ def _run_search(db, embedding_model, args_query_audio, args_offset_s,
     )
     t0 = time.monotonic()
     if args_exact:
-        results_obj, all_scores = brutalism.threaded_brute_search(
+        results_obj = brutalism.threaded_brute_search(
             db, query_embedding, args_num_results, score_fn=score_fn
         )
+        all_scores = np.array([r.sort_score for r in results_obj.search_results])
     else:
         ann_matches = db.ui.search(query_embedding, count=args_num_results)
         results_obj = search_results.TopKSearchResults(top_k=args_num_results)

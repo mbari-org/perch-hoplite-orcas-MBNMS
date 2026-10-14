@@ -706,6 +706,8 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Save score histogram PNG to this path.")
     ps.add_argument("--annotator-id", default="analyst",
                     help="Annotator identifier attached to saved labels.")
+    ps.add_argument("--audio-dir", default=None,
+        help="Override audio base path stored in DB.")
     add_serve(ps)
 
     # ---- label ----
